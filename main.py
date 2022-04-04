@@ -1,16 +1,26 @@
-# This is a sample Python script.
+import threading
+import tkinter as tk
+import Scenes
+import time
 
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+root = tk.Tk()
+
+scene_countdown = Scenes.SceneCountdown(root=root)
+scene_running = Scenes.SceneRunning(root=root)
+scene_scoreboard = Scenes.SceneScoreboard(root=root)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Strg+F8 to toggle the breakpoint.
+def main():
+    init_game()
+    root.minsize(width=Scenes.bg_width, height=Scenes.bg_height)
+    root.mainloop()
 
 
-# Press the green button in the gutter to run the script.
+def init_game():
+    Scenes.switch_scene(None, scene_countdown)
+    root.after(Scenes.ms_counter, Scenes.switch_scene, scene_countdown, scene_running)
+    root.after(Scenes.ms_counter + Scenes.ms_running, Scenes.switch_scene_score, scene_running, scene_scoreboard)
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()
