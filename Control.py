@@ -25,11 +25,21 @@ def get_max_freq():
 
 
 def set_min_freq(min_freq):
-    print(min_freq)
     vna.cmd(":VNA:FREQuency:START " + str(min_freq))
-    print(vna.query(":VNA:FREQuency:START?"))
+    result = vna.query(":VNA:FREQuency:START?")
+    if min_freq != float(result):
+        raise ValueError("min_freq was not saved")
+
 
 def set_max_freq(max_freq):
-    print(max_freq)
     vna.cmd(":VNA:FREQuency:STOP " + str(max_freq))
-    print(vna.query(":VNA:FREQuency:STOP?"))
+    result = vna.query(":VNA:FREQuency:STOP?")
+    if max_freq != float(result):
+        raise ValueError("max_freq was not saved")
+
+
+def set_points(nr_points):
+    vna.cmd(":VNA:ACQuisition:POINTS " + str(nr_points))
+    result = vna.query(":VNA:ACQuisition:POINTS?")
+    if nr_points != int(result):
+        raise ValueError("points were not saved")
