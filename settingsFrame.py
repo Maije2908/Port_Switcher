@@ -37,10 +37,26 @@ class settingsFrame(tk.LabelFrame):
         self.points_ent = tk.Entry(self)
         self.add_nr_points()
 
-        tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=3)
+        #bandwidth
+        self.bandwidth_ent = tk.Entry(self)
+        self.add_bandwidth()
+
+        #power level
+        self.power_ent = tk.Entry(self)
+        self.add_power()
+
+        tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=5)
+
+    def add_power(self):
+        tk.Label(self, text="power level dBm").grid(row=4, column=0, padx=5, pady=5)
+        self.power_ent.grid(row=4, column=1)
+
+    def add_bandwidth(self):
+        tk.Label(self, text="bandwidth Hz").grid(row=3, column=0, padx=5, pady=5)
+        self.bandwidth_ent.grid(row=3, column=1)
 
     def add_nr_points(self):
-        tk.Label(self, text="number of points").grid(row=2, column=0)
+        tk.Label(self, text="number of points").grid(row=2, column=0, padx=5, pady=5)
         self.points_ent.grid(row=2, column=1)
 
     def add_freq_controls(self):
@@ -65,6 +81,8 @@ class settingsFrame(tk.LabelFrame):
         save_succeeded = [True]
         self.save_freq_settings(save_succeeded)
         self.save_nr_points(save_succeeded)
+        self.save_bandwidth(save_succeeded)
+        self.save_power(save_succeeded)
 
         if save_succeeded[0] is True:
             messagebox.showinfo("Success", "settings saved")
@@ -93,3 +111,19 @@ class settingsFrame(tk.LabelFrame):
             print(e)
             succeeded[0] = False
             succeeded.append("Could not save number of points\n")
+
+    def save_bandwidth(self, succeeded):
+        try:
+            Control.set_bandwidth(int(self.bandwidth_ent.get()))
+        except ValueError as e:
+            print(e)
+            succeeded[0] = False
+            succeeded.append("Could not save number of points\n")
+
+    def save_power(self, succeeded):
+        try:
+            Control.set_power(float(self.power_ent.get()))
+        except ValueError as e:
+            print(e)
+            succeeded[0] = False
+            succeeded.append("Could not save power level\n")

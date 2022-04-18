@@ -43,3 +43,17 @@ def set_points(nr_points):
     result = vna.query(":VNA:ACQuisition:POINTS?")
     if nr_points != int(result):
         raise ValueError("points were not saved")
+
+
+def set_bandwidth(bandwidth):
+    vna.cmd(":VNA:ACQuisition:IFBW " + str(bandwidth))
+    result = vna.query(":VNA:ACQuisition:IFBW?")
+    if bandwidth != int(result):
+        raise ValueError("IF bandwidth not saved")
+
+
+def set_power(power):
+    vna.cmd(":VNA:STIMulus:LVL " + str(power))
+    result = vna.query(":VNA:STIMulus:LVL?")
+    if power != float(result):
+        raise ValueError("power not saved")
