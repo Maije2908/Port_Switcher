@@ -46,6 +46,7 @@ class settingsFrame(tk.LabelFrame):
         self.add_power()
 
         tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=5)
+        tk.Button(self, text="Load Calibration", command=lambda: Control.load_calibration("PORT")).grid(row=6)
 
     def add_power(self):
         tk.Label(self, text="power level dBm").grid(row=4, column=0, padx=5, pady=5)

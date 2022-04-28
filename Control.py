@@ -1,19 +1,60 @@
 from libreVNA import libreVNA
+from libreVNA import NoConnectionException
+import time
+
+import subprocess
 
 # Create the control instance
-vna = libreVNA('localhost', 19542)
+VNA_PORT = 19542
+GUI_PATH = "/home/david/Desktop/work/libreVNA_gui/LibreVNA-GUI-Ubuntu-v1.3.0/LibreVNA-GUI"
+NO_GUI = False
 
-# Quick connection check (should print "LibreVNA-GUI")
-print(vna.query("*IDN?"))
+gui_process = None
+vna = None
 
-# Make sure we are connecting to a device (just to be sure, with default settings the LibreVNA-GUI auto-connects)
-vna.cmd(":DEV:CONN")
-dev = vna.query(":DEV:CONN?")
-if dev == "Not connected":
-    print("Not connected to any device, aborting")
-    exit(-1)
-else:
-    print("Connected to " + dev)
+
+def init_vna():
+    global gui_process
+    global vna
+    # start gui/tcp server
+    if NO_GUI:
+        gui_process = subprocess.Popen([GUI_PATH, "--no-gui"], shell=False)
+    else:
+        gui_process = subprocess.Popen([GUI_PATH], shell=False)
+    # Create the control instance
+    not_connected_port = True
+    not_connected_device = True
+    while not_connected_port:
+        try:
+            vna = libreVNA('localhost', VNA_PORT)
+        except NoConnectionException as e:
+            time.sleep(1)
+            continue
+        not_connected_port = False
+
+    # Quick connection check (should print "LibreVNA-GUI")
+    print(vna.query("*IDN?"))
+
+    # Make sure we are connecting to a device (just to be sure, with default settings the LibreVNA-GUI auto-connects)
+    while not_connected_device:
+        vna.cmd(":DEV:CONN")
+        dev = vna.query(":DEV:CONN?")
+        if dev == "Not connected":
+            print("Not connected to any device")
+            time.sleep(5)
+        else:
+            print("Connected to " + dev)
+            not_connected_device = False
+
+
+def load_calibration(calibration_file):
+    vna.cmd(":VNA:CAL:LOAD " + calibration_file)
+    result = vna.query(":VNA:CAL:LOAD?")
+    print(result)
+
+
+def close_gui():
+    gui_process.terminate()
 
 
 def get_min_freq():

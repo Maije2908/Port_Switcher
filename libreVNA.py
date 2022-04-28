@@ -1,6 +1,11 @@
 import socket
 from asyncio import IncompleteReadError  # only import the exception class
 
+
+class NoConnectionException(Exception):
+    pass
+
+
 class SocketStreamReader:
     def __init__(self, sock: socket.socket):
         self._sock = sock
@@ -43,7 +48,7 @@ class SocketStreamReader:
 
         result = bytes(buf[: idx + 1])
         self._recv_buffer = b"".join(
-            (memoryview(buf)[idx + 1 :], self._recv_buffer)
+            (memoryview(buf)[idx + 1:], self._recv_buffer)
         )
         return result
 
@@ -56,13 +61,15 @@ class SocketStreamReader:
         bytes_read += self._sock.recv_into(view[bytes_read:])
         return bytes_read
 
+
 class libreVNA:
     def __init__(self, host='localhost', port=19542):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.sock.connect((host, port))
         except:
-            raise Exception("Unable to connect to LibreVNA-GUI. Make sure it is running and the TCP server is enabled.")
+            raise NoConnectionException("Unable to connect to LibreVNA-GUI. Make sure it is running and the TCP "
+                                        "server is enabled.")
         self.reader = SocketStreamReader(self.sock)
 
     def __del__(self):
@@ -80,20 +87,19 @@ class libreVNA:
         self.sock.sendall(query.encode())
         self.sock.send(b"\n")
         return self.__read_response()
-    
+
     @staticmethod
     def parse_trace_data(data):
         ret = []
         # Remove brackets (order of data implicitly known)
-        data = data.replace(']','').replace('[','')
+        data = data.replace(']', '').replace('[', '')
         values = data.split(',')
         if int(len(values) / 3) * 3 != len(values):
             # number of values must be a multiple of three (frequency, real, imaginary)
             raise Exception("Invalid input data: expected tuples of three values each")
         for i in range(0, len(values), 3):
             freq = float(values[i])
-            real = float(values[i+1])
-            imag = float(values[i+2])
+            real = float(values[i + 1])
+            imag = float(values[i + 2])
             ret.append((freq, complex(real, imag)))
-        return ret       
-
+        return ret

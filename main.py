@@ -1,4 +1,6 @@
 import tkinter as tk
+
+import Control
 import settingsFrame
 
 
@@ -11,8 +13,10 @@ class MainApplication(tk.Frame):
 
 
 if __name__ == "__main__":
+    Control.init_vna()
     root = tk.Tk()
     w, h = root.winfo_screenwidth(), root.winfo_screenheight()
     root.geometry("%dx%d+0+0" % (w, h))
     MainApplication(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
+    Control.close_gui()
