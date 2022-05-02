@@ -2,6 +2,7 @@ import tkinter as tk
 
 import Control
 import settingsFrame
+import sys
 
 
 class MainApplication(tk.Frame):
@@ -12,7 +13,18 @@ class MainApplication(tk.Frame):
         self.settings_frame.pack(anchor='nw')
 
 
-if __name__ == "__main__":
+def main():
+    """
+    main function that parses argv to for --no-gui option
+    inits the libreVNA, sets the window size of the tkinter-gui and instantiates
+    the main application, which is basically a frame. Enters mainloop()
+    and closes the libreVNA-gui again.
+    """
+    try:
+        if sys.argv[1] == "--no-gui":
+            Control.NO_GUI = True
+    except IndexError:
+        pass
     Control.init_vna()
     root = tk.Tk()
     w, h = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -20,3 +32,7 @@ if __name__ == "__main__":
     MainApplication(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
     Control.close_gui()
+
+
+if __name__ == "__main__":
+    main()

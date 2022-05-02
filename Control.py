@@ -4,8 +4,8 @@ import time
 
 import subprocess
 
-# Create the control instance
 VNA_PORT = 19542
+# enter your GUI path here
 GUI_PATH = "/home/david/Desktop/work/libreVNA_gui/LibreVNA-GUI-Ubuntu-v1.3.0/LibreVNA-GUI"
 NO_GUI = False
 
@@ -14,6 +14,11 @@ vna = None
 
 
 def init_vna():
+    """
+    starts the libreVNA-gui in a separate process, either with visible gui or without,
+    in order to start the tcp server to send SCPI commands. Then creates a libreVNA instance
+    and tries to connect every 5 until connection is established.
+    """
     global gui_process
     global vna
     # start gui/tcp server
@@ -47,25 +52,45 @@ def init_vna():
             not_connected_device = False
 
 
-def load_calibration(calibration_file):
-    vna.cmd(":VNA:CAL:LOAD " + calibration_file)
-    result = vna.query(":VNA:CAL:LOAD?")
-    print(result)
+def load_calibration(calibration_file: str):
+    """
+    loads a calibration_file
+    :param calibration_file: the path of the calibration file as a string,
+    relative to where the application was started
+    """
+    success = vna.query(":VNA:CAL:LOAD? " + calibration_file)
+    if not success:
+        raise ValueError("could not load calibration file" + calibration_file)
 
 
 def close_gui():
+    """
+    terminates the libreVNA gui process used for the tcp server.
+    """
     gui_process.terminate()
 
 
 def get_min_freq():
+    """
+    getter for min frequency of the libreVNA
+    :return: min frequency of the libreVNA
+    """
     return vna.query(":DEV:INF:MINF?")
 
 
 def get_max_freq():
+    """
+    getter for max frequency of the libreVNA
+    :return: max frequency of the libreVNA
+    """
     return vna.query(":DEV:INF:MAXF?")
 
 
 def set_min_freq(min_freq):
+    """
+    setter for start frequency of the libreVNA
+    :param min_freq: start frequency for measurements
+    """
     vna.cmd(":VNA:FREQuency:START " + str(min_freq))
     result = vna.query(":VNA:FREQuency:START?")
     if min_freq != float(result):
@@ -73,13 +98,43 @@ def set_min_freq(min_freq):
 
 
 def set_max_freq(max_freq):
+    """
+    setter for stop frequency of the libreVNA
+    :param max_freq: stop frequency for measurements
+    """
     vna.cmd(":VNA:FREQuency:STOP " + str(max_freq))
     result = vna.query(":VNA:FREQuency:STOP?")
     if max_freq != float(result):
         raise ValueError("max_freq was not saved")
 
 
+def set_center_freq(center_freq):
+    """
+    setter for center frequency of the libreVNA
+    :param center_freq: center frequency for measurements
+    """
+    vna.cmd(":VNA:FREQuency:CENTer " + str(center_freq))
+    result = vna.query(":VNA:FREQuency:CENTer?")
+    if center_freq != float(result):
+        raise ValueError("min_freq was not saved")
+
+
+def set_span_freq(span_freq):
+    """
+    setter for span frequency of the libreVNA
+    :param span_freq: span frequency for measurements
+    """
+    vna.cmd(":VNA:FREQuency:SPAN " + str(span_freq))
+    result = vna.query(":VNA:FREQuency:SPAN?")
+    if span_freq != float(result):
+        raise ValueError("max_freq was not saved")
+
+
 def set_points(nr_points):
+    """
+    setter for the number of points per measurement
+    :param nr_points: number of points for measurement
+    """
     vna.cmd(":VNA:ACQuisition:POINTS " + str(nr_points))
     result = vna.query(":VNA:ACQuisition:POINTS?")
     if nr_points != int(result):
@@ -87,6 +142,10 @@ def set_points(nr_points):
 
 
 def set_bandwidth(bandwidth):
+    """
+    setter for the bandwidth of the bandpass filter
+    :param bandwidth: bandwidth of the bandpass filter
+    """
     vna.cmd(":VNA:ACQuisition:IFBW " + str(bandwidth))
     result = vna.query(":VNA:ACQuisition:IFBW?")
     if bandwidth != int(result):
@@ -94,6 +153,10 @@ def set_bandwidth(bandwidth):
 
 
 def set_power(power):
+    """
+    setter for the power level of the measurement signal
+    :param power: power level in dBm
+    """
     vna.cmd(":VNA:STIMulus:LVL " + str(power))
     result = vna.query(":VNA:STIMulus:LVL?")
     if power != float(result):

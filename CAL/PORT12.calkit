@@ -1,0 +1,110 @@
+{
+    "Description": "",
+    "Manufacturer": "",
+    "SOLT": {
+        "Load": {
+            "Measurements": {
+                "File": "",
+                "File_Female": "",
+                "Port": 0,
+                "Port_Female": 0,
+                "Use": false,
+                "Use_Female": false
+            },
+            "Param": {
+                "C": 0.0,
+                "C_Female": 0.0,
+                "Delay": 0.0,
+                "Delay_Female": 0.0,
+                "L": 0.0,
+                "L_Female": 0.0,
+                "Resistance": 50.0,
+                "Resistance_Female": 50.0,
+                "Z0": 50.0,
+                "Z0_Female": 50.0
+            }
+        },
+        "Open": {
+            "Measurements": {
+                "File": "",
+                "File_Female": "",
+                "Port": 0,
+                "Port_Female": 0,
+                "Use": false,
+                "Use_Female": false
+            },
+            "Param": {
+                "C0": 0.0,
+                "C0_Female": 0.0,
+                "C1": 0.0,
+                "C1_Female": 0.0,
+                "C2": 0.0,
+                "C2_Female": 0.0,
+                "C3": 0.0,
+                "C3_Female": 0.0,
+                "Delay": 0.0,
+                "Delay_Female": 0.0,
+                "Loss": 0.0,
+                "Loss_Female": 0.0,
+                "Z0": 50.0,
+                "Z0_Female": 50.0
+            }
+        },
+        "SeparateMaleFemale": false,
+        "Short": {
+            "Measurements": {
+                "File": "",
+                "File_Female": "",
+                "Port": 0,
+                "Port_Female": 0,
+                "Use": false,
+                "Use_Female": false
+            },
+            "Param": {
+                "Delay": 0.0,
+                "Delay_Female": 0.0,
+                "L0": 0.0,
+                "L0_Female": 0.0,
+                "L1": 0.0,
+                "L1_Female": 0.0,
+                "L2": 0.0,
+                "L2_Female": 0.0,
+                "L3": 0.0,
+                "L3_Female": 0.0,
+                "Loss": 0.0,
+                "Loss_Female": 0.0,
+                "Z0": 50.0,
+                "Z0_Female": 50.0
+            }
+        },
+        "Through": {
+            "Measurements": {
+                "File": "",
+                "Port1": 0,
+                "Port2": 1,
+                "Use": false
+            },
+            "Param": {
+                "Delay": 0.0,
+                "Loss": 0.0,
+                "Z0": 50.0
+            }
+        },
+        "loadModelCFirst": false
+    },
+    "Serialnumber": "",
+    "StartDialogWithSOLT": true,
+    "TRL": {
+        "Line": {
+            "Delay": 74.0,
+            "maxFreq": 6000000000.0,
+            "minFreq": 751000000.0
+        },
+        "Reflect": {
+            "isShort": false
+        },
+        "Through": {
+            "Z0": 50.0
+        }
+    }
+}
