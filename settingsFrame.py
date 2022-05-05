@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import Control
+import main
 
 
 def determine_freq_factor(postfix: str) -> float:
@@ -27,7 +28,8 @@ def show_bounds():
     bounds = "frequency range: 100kHz - 6GHz\n" \
              "number of points: 2 - 4501\n" \
              "bandwidth: 10Hz - 50kHz\n" \
-             "power level: -40dBm - 0dBm"
+             "power level: -40dBm - 0dBm\n" \
+             "average over: 1 - 99"
     messagebox.showinfo("Bounds Info", bounds)
 
 
@@ -62,11 +64,19 @@ class settingsFrame(tk.LabelFrame):
         self.power_ent = tk.Entry(self)
         self.add_power()
 
-        tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=5, column=0)
-        tk.Button(self, text="Bounds Info", command=show_bounds).grid(row=5, column=2)
-        tk.Button(self, text="Switch Frequency", command=self.switch_freq_input).grid(row=5, column=1)
+        # average over
+        self.average_ent = tk.Entry(self)
+        self.add_average()
+
+        # measurement type
+        self.measurement_type = tk.StringVar()
+        self.add_measurement_type()
+
+        tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=7, column=0)
+        tk.Button(self, text="Bounds Info", command=show_bounds).grid(row=7, column=2)
+        tk.Button(self, text="Switch Frequency", command=self.switch_freq_input).grid(row=7, column=1)
         tk.Button(self, text="Load Calib. (testing only)"
-                  , command=lambda: Control.load_calibration("CAL/PORT12.cal")).grid(row=6)
+                  , command=lambda: Control.load_calibration("CAL/PORT12.cal")).grid(row=8)
 
     def switch_freq_input(self):
         """
@@ -87,6 +97,22 @@ class settingsFrame(tk.LabelFrame):
             self.span_freq_label.grid_remove()
             self.start_freq_label.grid(row=0, column=0)
             self.stop_freq_label.grid(row=1, column=0)
+
+    def add_measurement_type(self):
+        options = [
+            "2-port measurement",
+            "4-port measurement", ]
+        tk.Label(self, text="measurement type").grid(row=6, column=0)
+        self.measurement_type.set("2-port measurement")
+        drop_type = tk.OptionMenu(self, self.measurement_type, *options)
+        drop_type.grid(row=6, column=1)
+
+    def add_average(self):
+        """
+        places average label and entry
+        """
+        tk.Label(self, text="average over").grid(row=5, column=0, padx=5, pady=5)
+        self.average_ent.grid(row=5, column=1)
 
     def add_power(self):
         """
@@ -137,14 +163,19 @@ class settingsFrame(tk.LabelFrame):
         an error message is appended to the list. At the end the result, including the error messages,
         is displayed in a message box.
         """
+        self.parent.close_measure_window()
         save_succeeded = [True]
         self.save_freq_settings(save_succeeded)
         self.save_nr_points(save_succeeded)
         self.save_bandwidth(save_succeeded)
         self.save_power(save_succeeded)
+        self.save_average(save_succeeded)
 
         if save_succeeded[0] is True:
             messagebox.showinfo("Success", "settings saved")
+            self.parent.open_measure_window()
+
+
         else:
             error_msg = str()
             for error_entry in save_succeeded[1:]:
@@ -206,3 +237,15 @@ class settingsFrame(tk.LabelFrame):
             print(e)
             succeeded[0] = False
             succeeded.append("Could not save power level\n")
+
+    def save_average(self, succeeded: list):
+        """
+        tries to save average over setting. If Control's setter functions fail a ValueError is thrown
+        and this is noted in the succeeded list.
+        """
+        try:
+            Control.set_average(int(self.average_ent.get()))
+        except ValueError as e:
+            print(e)
+            succeeded[0] = False
+            succeeded.append("Could not save average\n")

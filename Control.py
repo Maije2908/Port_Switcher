@@ -161,3 +161,14 @@ def set_power(power):
     result = vna.query(":VNA:STIMulus:LVL?")
     if power != float(result):
         raise ValueError("power not saved")
+
+
+def set_average(average):
+    """
+    setter for over how many samples the average is calculated
+    :param average: power level in dBm
+    """
+    vna.cmd(":VNA:ACQ:AVG " + str(average))
+    result = vna.query(":VNA:ACQ:AVG?")
+    if average != int(result):
+        raise ValueError("power not saved")

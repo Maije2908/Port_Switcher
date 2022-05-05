@@ -2,6 +2,7 @@ import tkinter as tk
 
 import Control
 import settingsFrame
+import measureFrame
 import sys
 
 
@@ -10,7 +11,18 @@ class MainApplication(tk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.settings_frame = settingsFrame.settingsFrame(self, text="settings", pady=5, padx=5)
-        self.settings_frame.pack(anchor='nw')
+        self.settings_frame.grid(row=0, column=0)
+        self.measure_window = None
+
+    def open_measure_window(self):
+        self.measure_window = tk.Toplevel(self.parent)
+        measureFrame.measureFrame(self.measure_window, text="measure", pady=5, padx=5).pack()
+
+    def close_measure_window(self):
+        if self.measure_window is not None:
+            self.measure_window.destroy()
+            self.measure_window.update()
+            self.measure_window = None
 
 
 def main():
