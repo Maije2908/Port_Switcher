@@ -36,6 +36,7 @@ def show_bounds():
 class settingsFrame(tk.LabelFrame):
 
     def __init__(self, parent, *args, **kwargs):
+        self.measurement_type = kwargs.pop("measure_type")
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.config(width=200)
@@ -69,7 +70,6 @@ class settingsFrame(tk.LabelFrame):
         self.add_average()
 
         # measurement type
-        self.measurement_type = tk.StringVar()
         self.add_measurement_type()
 
         tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=7, column=0)
@@ -181,6 +181,8 @@ class settingsFrame(tk.LabelFrame):
             for error_entry in save_succeeded[1:]:
                 error_msg += error_entry
             messagebox.showinfo("Error", error_msg)
+            self.parent.open_measure_window()
+
 
     def save_freq_settings(self, succeeded: list):
         """

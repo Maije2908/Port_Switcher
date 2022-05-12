@@ -3,6 +3,8 @@ import tkinter as tk
 import Control
 import settingsFrame
 import measureFrame
+import calibrationFrame
+
 import sys
 
 
@@ -10,13 +12,18 @@ class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
-        self.settings_frame = settingsFrame.settingsFrame(self, text="settings", pady=5, padx=5)
+        self.measurement_type = tk.StringVar()
+        self.settings_frame = settingsFrame.settingsFrame(self, measure_type=self.measurement_type, text="settings",
+                                                          pady=5, padx=5)
         self.settings_frame.grid(row=0, column=0)
+        self.calibrationFrame = calibrationFrame.calibrationFrame(self, measure_type=self.measurement_type, text="calibration",
+                                                          pady=5, padx=5)
+        self.calibrationFrame.grid(row=0, column=1)
         self.measure_window = None
 
-    def open_measure_window(self, measure_type):
+    def open_measure_window(self):
         self.measure_window = tk.Toplevel(self.parent)
-        measureFrame.measureFrame(self.measure_window, measure_type, text="measure", pady=5, padx=5).pack()
+        measureFrame.measureFrame(self.measure_window, self.measurement_type.get(), text="measure", pady=5, padx=5).pack()
 
     def close_measure_window(self):
         if self.measure_window is not None:
