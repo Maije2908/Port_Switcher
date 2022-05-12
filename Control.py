@@ -86,6 +86,32 @@ def get_max_freq():
     return vna.query(":DEV:INF:MAXF?")
 
 
+def get_avg_done_fraction():
+    """
+    getter for how many measurements of the total number to be averaged over
+    are done already
+    :return: float from 0 to 1 representing the status of the averaging process
+    """
+    return float(get_avg_current()) / float(get_avg_total())
+
+
+def get_avg_total():
+    return vna.query(":VNA:ACQ:AVG?")
+
+
+def get_avg_current():
+    return vna.query(":VNA:ACQ:AVGLEV?")
+
+
+def get_trace_data(trace):
+    """
+    getter for trace data
+    :param trace: which trace (S11, S21 etc)
+    :return: the trace data as a list
+    """
+    return vna.parse_trace_data(vna.query(":VNA:TRAC:DATA? " + trace))
+
+
 def set_min_freq(min_freq):
     """
     setter for start frequency of the libreVNA

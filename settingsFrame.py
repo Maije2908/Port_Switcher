@@ -173,7 +173,7 @@ class settingsFrame(tk.LabelFrame):
 
         if save_succeeded[0] is True:
             messagebox.showinfo("Success", "settings saved")
-            self.parent.open_measure_window()
+            self.parent.open_measure_window(self.measurement_type.get())
 
 
         else:

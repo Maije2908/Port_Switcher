@@ -14,9 +14,9 @@ class MainApplication(tk.Frame):
         self.settings_frame.grid(row=0, column=0)
         self.measure_window = None
 
-    def open_measure_window(self):
+    def open_measure_window(self, measure_type):
         self.measure_window = tk.Toplevel(self.parent)
-        measureFrame.measureFrame(self.measure_window, text="measure", pady=5, padx=5).pack()
+        measureFrame.measureFrame(self.measure_window, measure_type, text="measure", pady=5, padx=5).pack()
 
     def close_measure_window(self):
         if self.measure_window is not None:
