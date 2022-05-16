@@ -1,14 +1,14 @@
+import sys
 import tkinter as tk
 
 import Control
-import settingsFrame
-import measureFrame
 import calibrationFrame
-
-import sys
+import measureFrame
+import settingsFrame
 
 
 class MainApplication(tk.Frame):
+
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
@@ -16,20 +16,36 @@ class MainApplication(tk.Frame):
         self.settings_frame = settingsFrame.settingsFrame(self, measure_type=self.measurement_type, text="settings",
                                                           pady=5, padx=5)
         self.settings_frame.grid(row=0, column=0)
-        self.calibrationFrame = calibrationFrame.calibrationFrame(self, measure_type=self.measurement_type, text="calibration",
-                                                          pady=5, padx=5)
-        self.calibrationFrame.grid(row=0, column=1)
         self.measure_window = None
+        self.calibration_window = None
+
+        self.measurement_type.trace_add('write', self.callback_type_changed)
+
+    def callback_type_changed(self, var, index, mode):
+        self.close_calibration_window()
+        self.close_measure_window()
 
     def open_measure_window(self):
+        self.close_measure_window()
         self.measure_window = tk.Toplevel(self.parent)
-        measureFrame.measureFrame(self.measure_window, self.measurement_type.get(), text="measure", pady=5, padx=5).pack()
+        measureFrame.measureFrame(self.measure_window, self.measurement_type, text="measure", pady=5, padx=5).pack()
+
+    def open_calibration_window(self):
+        self.close_calibration_window()
+        self.calibration_window = tk.Toplevel(self.parent)
+        calibrationFrame.calibrationFrame(self.calibration_window, self.measurement_type, text="calibration", pady=5, padx=5).pack()
 
     def close_measure_window(self):
         if self.measure_window is not None:
             self.measure_window.destroy()
             self.measure_window.update()
             self.measure_window = None
+
+    def close_calibration_window(self):
+        if self.calibration_window is not None:
+            self.calibration_window.destroy()
+            self.calibration_window.update()
+            self.calibration_window = None
 
 
 def main():
@@ -46,8 +62,8 @@ def main():
         pass
     Control.init_vna()
     root = tk.Tk()
-    w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-    root.geometry("%dx%d+0+0" % (w, h))
+    # w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+    # root.geometry("%dx%d+0+0" % (w, h))
     MainApplication(root).pack(side="top", fill="both", expand=True)
     root.mainloop()
     Control.close_gui()

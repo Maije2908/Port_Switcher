@@ -75,8 +75,13 @@ class settingsFrame(tk.LabelFrame):
         tk.Button(self, text="Save Settings", command=self.save_settings).grid(row=7, column=0)
         tk.Button(self, text="Bounds Info", command=show_bounds).grid(row=7, column=2)
         tk.Button(self, text="Switch Frequency", command=self.switch_freq_input).grid(row=7, column=1)
-        tk.Button(self, text="Load Calib. (testing only)"
-                  , command=lambda: Control.load_calibration("CAL/PORT12.cal")).grid(row=8)
+        tk.Button(self, text="Measure",
+                  command=lambda: self.parent.open_measure_window()).grid(row=8, column=1)
+
+        self.calibrate_button = tk.Button(self, text="Calibrate", command=lambda: self.parent.open_calibration_window())
+        self.calibrate_button.grid(row=8, column=0)
+        tk.Button(self, text="LOAD CAAL", command=lambda: Control.load_calibration("CAL/TEST.calkit")).grid(row=8, column=2)
+
 
     def switch_freq_input(self):
         """
@@ -164,6 +169,8 @@ class settingsFrame(tk.LabelFrame):
         is displayed in a message box.
         """
         self.parent.close_measure_window()
+        self.parent.close_calibration_window()
+
         save_succeeded = [True]
         self.save_freq_settings(save_succeeded)
         self.save_nr_points(save_succeeded)
@@ -173,7 +180,7 @@ class settingsFrame(tk.LabelFrame):
 
         if save_succeeded[0] is True:
             messagebox.showinfo("Success", "settings saved")
-            self.parent.open_measure_window(self.measurement_type.get())
+            self.calibrate_button.grid(row=8)
 
 
         else:
