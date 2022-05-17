@@ -51,6 +51,25 @@ def init_vna():
             print("Connected to " + dev)
             not_connected_device = False
 
+def check_calibration_ongoing():
+    """
+    checks if a calibration measurement is currently ongoing
+    :return: a bool, either true or false
+    """
+    ongoing = vna.query(":VNA:CAL:BUSY?")
+    if ongoing == "TRUE":
+        return True
+    else:
+        return False
+
+
+def calibration_measure(cal_type: str):
+    """
+    starts a calibration measurement
+    :param type: the type of calibration measurement
+    """
+    vna.cmd(":VNA:CAL:MEAS " + cal_type)
+
 
 def load_calibration(calibration_file: str):
     """
@@ -59,7 +78,7 @@ def load_calibration(calibration_file: str):
     relative to where the application was started
     """
     success = vna.query(":VNA:CAL:LOAD? " + calibration_file)
-    if not success:
+    if success == "FALSE":
         raise ValueError("could not load calibration file" + calibration_file)
 
 

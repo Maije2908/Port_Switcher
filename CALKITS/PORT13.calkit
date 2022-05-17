@@ -12,7 +12,7 @@
                 "Use_Female": false
             },
             "Param": {
-                "C": 0.0,
+                "C": 13.0,
                 "C_Female": 0.0,
                 "Delay": 0.0,
                 "Delay_Female": 0.0,
@@ -53,11 +53,11 @@
         "SeparateMaleFemale": false,
         "Short": {
             "Measurements": {
-                "File": "",
+                "File": "../../libreVNA_source/LibreVNA/Documentation/Measurements/Prototype_Isolation_SOLT.s2p",
                 "File_Female": "",
                 "Port": 0,
                 "Port_Female": 0,
-                "Use": false,
+                "Use": true,
                 "Use_Female": false
             },
             "Param": {
@@ -90,7 +90,7 @@
                 "Z0": 50.0
             }
         },
-        "loadModelCFirst": false
+        "loadModelCFirst": true
     },
     "Serialnumber": "",
     "StartDialogWithSOLT": true,

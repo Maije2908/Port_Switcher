@@ -33,7 +33,7 @@ class MainApplication(tk.Frame):
     def open_calibration_window(self):
         self.close_calibration_window()
         self.calibration_window = tk.Toplevel(self.parent)
-        calibrationFrame.calibrationFrame(self.calibration_window, self.measurement_type, text="calibration", pady=5, padx=5).pack()
+        calibrationFrame.calibrationFrame(self.calibration_window, self.measurement_type.get(), text="calibration", pady=5, padx=5).pack()
 
     def close_measure_window(self):
         if self.measure_window is not None:

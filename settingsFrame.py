@@ -80,7 +80,7 @@ class settingsFrame(tk.LabelFrame):
 
         self.calibrate_button = tk.Button(self, text="Calibrate", command=lambda: self.parent.open_calibration_window())
         self.calibrate_button.grid(row=8, column=0)
-        tk.Button(self, text="LOAD CAAL", command=lambda: Control.load_calibration("CAL/TEST.calkit")).grid(row=8, column=2)
+        tk.Button(self, text="LOAD CAAL", command=lambda: Control.load_calibration("CAL/PORT13.cal")).grid(row=8, column=2)
 
 
     def switch_freq_input(self):
