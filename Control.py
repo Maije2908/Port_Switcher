@@ -51,6 +51,7 @@ def init_vna():
             print("Connected to " + dev)
             not_connected_device = False
 
+
 def check_calibration_ongoing():
     """
     checks if a calibration measurement is currently ongoing
@@ -217,3 +218,10 @@ def set_average(average):
     result = vna.query(":VNA:ACQ:AVG?")
     if average != int(result):
         raise ValueError("power not saved")
+
+
+def set_cal_type(cal_type: str):
+    vna.cmd(":VNA:CAL:TYPE " + cal_type)
+    result = vna.query(":VNA:CAL:TYPE?")
+    if cal_type != result:
+        raise ValueError("cal type not saved")

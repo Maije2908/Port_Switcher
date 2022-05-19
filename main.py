@@ -27,13 +27,17 @@ class MainApplication(tk.Frame):
 
     def open_measure_window(self):
         self.close_measure_window()
-        self.measure_window = tk.Toplevel(self.parent)
-        measureFrame.measureFrame(self.measure_window, self.measurement_type, text="measure", pady=5, padx=5).pack()
+        self.measure_window = tk.Toplevel(self)
+        measureFrame.measureFrame(self.measure_window, self.measurement_type.get(), text="measure", pady=5, padx=5).pack()
 
     def open_calibration_window(self):
         self.close_calibration_window()
-        self.calibration_window = tk.Toplevel(self.parent)
-        calibrationFrame.calibrationFrame(self.calibration_window, self.measurement_type.get(), text="calibration", pady=5, padx=5).pack()
+        self.calibration_window = tk.Toplevel(self)
+        if self.measurement_type.get() == "2-port measurement":
+            calibrationFrame.calibrationFrame2port(self.calibration_window, self, text="calibration", pady=5, padx=5).pack()
+        else:
+            pass
+            # calibrationFrame.calibrationFrame4port(self.calibration_window, text="calibration", pady=5, padx=5).pack()
 
     def close_measure_window(self):
         if self.measure_window is not None:

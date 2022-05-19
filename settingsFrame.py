@@ -188,8 +188,6 @@ class settingsFrame(tk.LabelFrame):
             for error_entry in save_succeeded[1:]:
                 error_msg += error_entry
             messagebox.showinfo("Error", error_msg)
-            self.parent.open_measure_window()
-
 
     def save_freq_settings(self, succeeded: list):
         """
