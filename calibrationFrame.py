@@ -3,6 +3,7 @@ import os
 from tkinter import ttk
 from tkinter import messagebox
 import Control
+import calFileHandler
 
 
 def get_calkit_options_from_folder():
@@ -137,6 +138,201 @@ class calibrationFrame2port(calibrationFrame):
             if self.calibration_meas_option.get() == "":
                 self.all_measurements_done = True
             self.measure_button["state"] = "normal"
+
+    def remove_cal_option(self):
+        r_index = self.cal_options['menu'].index(self.calibration_meas_option.get())  # index of selected option.
+        self.cal_options['menu'].delete(r_index)  # deleted the option
+        self.calibration_meas_option.set(self.cal_options['menu'].entrycget(0, "label"))
+
+
+def is_done(done: list):
+    for i in range(0, len(done)):
+        if done[i] == 0:
+            return False
+
+    return True
+
+
+class calibrationFrame4port(calibrationFrame):
+    options_0 = [
+        "PORT_1", "PORT_2", "THROUGH"
+    ]
+
+    options_1_sol = [
+        "SHORT", "OPEN", "LOAD"
+    ]
+
+    options_2_through = [
+        "PORT_1_2", "PORT_1_3", "PORT_1_4", "PORT_2_3", "PORT_2_4", "PORT_3_4"
+    ]
+
+    sol_done = [0, 0, 0]  # 1 if done, short, open, load through
+    ports_sol_done = [0, 0]  # 1 if done, port1 sol, port2 sol ... port4 sol
+    through_done = [0]
+
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+
+        # text for type
+        tk.Label(self, text="measure type: 4_port measurement").grid(row=0, column=0)
+
+        self.cal_options_0 = None
+        self.cal_options_1 = None
+        self.cal_options_2 = None
+        self.measure_button = None
+        self.calibration_meas_option_0 = tk.StringVar(value=self.options_0[0])
+        self.calibration_meas_option_0_old_text = self.calibration_meas_option_0.get()
+        self.calibration_meas_option_1 = tk.StringVar(value=self.options_1_sol[0])
+        self.calibration_meas_option_2 = tk.StringVar(value=self.options_2_through[0])
+
+        # self.calibration_meas_option_0.trace_add('write', self.callback_meas_option_0_changed)
+
+        self.add_cal_options()
+        self.add_calibration_measure_buttons()
+
+    def callback_meas_option_0_changed(self, *args):
+        if self.calibration_meas_option_0_old_text != "THROUGH":
+            if is_done(self.sol_done):
+                # set sol of port to done
+                index = self.options_0.index(self.calibration_meas_option_0_old_text)
+                self.ports_sol_done[index] = 1
+                self.reset_sol_done()
+                # save one port cal file
+                self.save_sol_file()
+                # activate new selected port
+                if self.calibration_meas_option_0.get() == "THROUGH":
+                    self.switch_cal_options_1_2()
+            else:
+                self.calibration_meas_option_0.set(self.calibration_meas_option_0_old_text)
+                self.update_idletasks()
+                messagebox.showinfo("Error", "Finish all measurments for the selected port first.")
+
+        else:
+            if self.calibration_meas_option_0.get() != "THROUGH":
+                self.cal_options_2.grid_forget()
+                self.cal_options_1.grid(row=3, column=1)
+                self.calibration_meas_option_1.set(self.options_1_sol[0])
+
+        self.calibration_meas_option_0_old_text = self.calibration_meas_option_0.get()
+
+    def callback_meas_option_2_changed(self, *args):
+        pass
+
+    def switch_cal_options_1_2(self):
+        self.cal_options_1.grid_forget()
+        self.cal_options_2.grid(row=3, column=1)
+        self.calibration_meas_option_2.set(self.options_2_through[0])
+
+    def switch_cal_options_2_1(self):
+        self.cal_options_2.grid_forget()
+        self.cal_options_1.grid(row=3, column=1)
+        self.calibration_meas_option_1.set(self.options_1_sol[0])
+
+    def reset_all_done(self):
+        self.reset_sol_done()
+        for i in range(0, len(self.ports_sol_done)):
+            self.ports_sol_done[i] = 0
+        for i in range(0, len(self.through_done)):
+            self.through_done[i] = 0
+
+    def reset_sol_done(self):
+        for i in range(0, len(self.sol_done)):
+            self.sol_done[i] = 0
+
+    def disable_menus(self):
+        self.cal_options_0.configure(state="disabled")
+        self.cal_options_1.configure(state="disabled")
+        self.cal_options_2.configure(state="disabled")
+
+    def enable_menus(self):
+        self.cal_options_0.configure(state="normal")
+        self.cal_options_1.configure(state="normal")
+        self.cal_options_2.configure(state="normal")
+
+    def save_sol_file(self):
+        actual_port = int((self.options_0.index(self.calibration_meas_option_0_old_text) + 1))
+        # find libre port
+        calFileHandler.save_sol_file(actual_port, actual_port)
+
+    def save_through_file(self):
+        pass
+
+    def add_cal_options(self):
+        self.cal_options_0 = tk.OptionMenu(self, self.calibration_meas_option_0, *self.options_0,
+                                           command=self.callback_meas_option_0_changed)
+        self.cal_options_1 = tk.OptionMenu(self, self.calibration_meas_option_1, *self.options_1_sol)
+        self.cal_options_2 = tk.OptionMenu(self, self.calibration_meas_option_2, *self.options_2_through,
+                                           command=self.callback_meas_option_2_changed)
+
+        self.cal_options_0.grid(row=2, column=1)
+        self.cal_options_1.grid(row=3, column=1)
+
+    def add_calibration_measure_buttons(self):
+
+        self.measure_button = tk.Button(self, text="Measure", command=self.measure_calibration)
+        self.measure_button.grid(row=3, column=2)
+        tk.Button(self, text="Apply Calibration", command=self.apply_calibration).grid(row=4, column=1)
+        tk.Button(self, text="Reset Calibration", command=self.reset_cal_measurements).grid(row=4, column=0)
+
+    def apply_calibration(self):
+        # merge individual sol files to 6 2port files
+        pass
+
+    def reset_cal_measurements(self):
+        if self.calibration_meas_option_0.get() == "THROUGH":
+            self.switch_cal_options_2_1()
+
+        self.reset_all_done()
+        self.calibration_meas_option_0.set(self.options_0[0])
+        self.calibration_meas_option_0_old_text = self.options_0[0]
+        self.calibration_meas_option_1.set(self.options_1_sol[0])
+        self.calibration_meas_option_2.set(self.options_2_through[0])
+
+    def measure_calibration(self):
+        if self.calkit_valid is False:
+            messagebox.showinfo("Error", "select valid calkit first")
+            return
+
+        self.measure_button["state"] = "disabled"
+        self.disable_menus()
+
+        Control.calibration_measure(self.get_control_string())
+
+        if self.calibration_meas_option_0.get() != "THROUGH":
+            index = self.options_1_sol.index(self.calibration_meas_option_1.get())
+            self.sol_done[index] = 1
+        else:
+            index = self.options_2_through.index(self.calibration_meas_option_2.get())
+            self.through_done[index] = 1
+
+        self.after(500, self.update_after_measurement)
+
+    def get_control_string(self):
+        # find the 2-port position for the selected 4-port
+        return_string = ""
+        sel_option_0 = self.calibration_meas_option_0.get()
+        sel_option_1 = self.calibration_meas_option_1.get()
+        if sel_option_0 == "PORT_1" or sel_option_0 == "PORT_2":
+            return_string += (sel_option_0 + "_" + sel_option_1)
+        elif sel_option_0 == "PORT_3" or sel_option_0 == "PORT_4":
+            pass
+        else:
+            # through
+            return_string += "THROUGH"
+
+        return return_string
+
+    def update_after_measurement(self):
+        if Control.check_calibration_ongoing() is True:
+            self.after(500, self.update_after_measurement)
+        else:
+            if self.calibration_meas_option_0 == "THROUGH":
+                self.save_through_file()
+            if is_done(self.ports_sol_done) and is_done(self.through_done):
+                self.all_measurements_done = True
+            self.measure_button["state"] = "normal"
+            self.enable_menus()
 
     def remove_cal_option(self):
         r_index = self.cal_options['menu'].index(self.calibration_meas_option.get())  # index of selected option.

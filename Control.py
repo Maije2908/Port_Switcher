@@ -72,6 +72,14 @@ def calibration_measure(cal_type: str):
     vna.cmd(":VNA:CAL:MEAS " + cal_type)
 
 
+def save_calibration(file_path_and_name: str):
+    """
+    saves a calibration measurement
+    :param file_path_and_name: the path and filename
+    """
+    vna.cmd(":VNA:CAL:SAVE " + file_path_and_name)
+
+
 def load_calibration(calibration_file: str):
     """
     loads a calibration_file
