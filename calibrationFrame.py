@@ -194,10 +194,8 @@ class calibrationFrame4port(calibrationFrame):
     def callback_meas_option_0_changed(self, *args):
         if self.calibration_meas_option_0_old_text != "THROUGH":
             if is_done(self.sol_done):
-                # set sol of port to done
-                index = self.options_0.index(self.calibration_meas_option_0_old_text)
-                self.ports_sol_done[index] = 1
-                self.reset_sol_done()
+                # set to done
+                self.try_set_port_to_done()
                 # save one port cal file
                 self.save_sol_file()
                 # activate new selected port
@@ -218,6 +216,13 @@ class calibrationFrame4port(calibrationFrame):
 
     def callback_meas_option_2_changed(self, *args):
         pass
+
+    def try_set_port_to_done(self):
+        if is_done(self.sol_done):
+            # set sol of port to done
+            index = self.options_0.index(self.calibration_meas_option_0_old_text)
+            self.ports_sol_done[index] = 1
+            self.reset_sol_done()
 
     def switch_cal_options_1_2(self):
         self.cal_options_1.grid_forget()
@@ -256,7 +261,7 @@ class calibrationFrame4port(calibrationFrame):
         calFileHandler.save_sol_file(actual_port, actual_port)
 
     def save_through_file(self):
-        pass
+        calFileHandler.save_through_file(self.calibration_meas_option_2.get())
 
     def add_cal_options(self):
         self.cal_options_0 = tk.OptionMenu(self, self.calibration_meas_option_0, *self.options_0,
@@ -277,7 +282,12 @@ class calibrationFrame4port(calibrationFrame):
 
     def apply_calibration(self):
         # merge individual sol files to 6 2port files
-        pass
+        self.try_set_port_to_done()
+        if is_done(self.ports_sol_done) and is_done(self.through_done):
+            self.all_measurements_done = True
+            calFileHandler.merge_into_1_solt_file()
+        else:
+            messagebox.showinfo("error", "finish all measurements first")
 
     def reset_cal_measurements(self):
         if self.calibration_meas_option_0.get() == "THROUGH":
@@ -327,7 +337,7 @@ class calibrationFrame4port(calibrationFrame):
         if Control.check_calibration_ongoing() is True:
             self.after(500, self.update_after_measurement)
         else:
-            if self.calibration_meas_option_0 == "THROUGH":
+            if self.calibration_meas_option_0.get() == "THROUGH":
                 self.save_through_file()
             if is_done(self.ports_sol_done) and is_done(self.through_done):
                 self.all_measurements_done = True

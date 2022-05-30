@@ -231,5 +231,5 @@ def set_average(average):
 def set_cal_type(cal_type: str):
     vna.cmd(":VNA:CAL:TYPE " + cal_type)
     result = vna.query(":VNA:CAL:TYPE?")
-    if cal_type != result:
+    if cal_type != result.upper():
         raise ValueError("cal type not saved")
