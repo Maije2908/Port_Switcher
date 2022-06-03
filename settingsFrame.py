@@ -194,6 +194,7 @@ class settingsFrame(tk.LabelFrame):
         tries to save frequency settings distinguishing between center/span and start/stop.
         If Control's setter functions fail a ValueError is thrown and this is noted in the
         succeeded list.
+        :param succeeded: the succeeded list, first entry is False in case of error, other entries contain the error msg
         """
         try:
             first_fac = determine_freq_factor(self.freq_clicked_0.get())
@@ -213,6 +214,7 @@ class settingsFrame(tk.LabelFrame):
         """
         tries to save nr_points setting. If Control's setter functions fail a ValueError is thrown
         and this is noted in the succeeded list.
+        :param succeeded: the succeeded list, first entry is False in case of error, other entries contain the error msg
         """
         try:
             Control.set_points(int(self.points_ent.get()))
@@ -225,6 +227,7 @@ class settingsFrame(tk.LabelFrame):
         """
         tries to save the bandwidth setting. If Control's setter functions fail a ValueError is thrown
         and this is noted in the succeeded list.
+        :param succeeded: the succeeded list, first entry is False in case of error, other entries contain the error msg
         """
         try:
             Control.set_bandwidth(int(self.bandwidth_ent.get()))
@@ -237,6 +240,7 @@ class settingsFrame(tk.LabelFrame):
         """
         tries to save the power setting. If Control's setter functions fail a ValueError is thrown
         and this is noted in the succeeded list.
+        :param succeeded: the succeeded list, first entry is False in case of error, other entries contain the error msg
         """
         try:
             Control.set_power(float(self.power_ent.get()))
@@ -249,6 +253,7 @@ class settingsFrame(tk.LabelFrame):
         """
         tries to save average over setting. If Control's setter functions fail a ValueError is thrown
         and this is noted in the succeeded list.
+        :param succeeded: the succeeded list, first entry is False in case of error, other entries contain the error msg
         """
         try:
             Control.set_average(int(self.average_ent.get()))
